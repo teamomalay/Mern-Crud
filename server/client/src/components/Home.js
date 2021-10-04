@@ -16,7 +16,7 @@ const Home = () => {
             headers:{
               "Accept":"application/json",
               "Content-Type" :"application/json"
-            }
+            } 
     })
     const data=await res.json();
     setUserName(data.username);
