@@ -5,13 +5,16 @@ import Login from "./components/Login";
 import Products from "./components/Products";
 import ErrorPage from "./components/ErrorPage";
 import Home from "./components/Home";
+import Navbarr from "./components/Navbarr";
+import Logout from "./components/Logout";
 
 const App = () => {
   return (
     <div>
+      <Navbarr />
       <Switch>
         <Route path="/" exact>
-          <Home />                    
+          <Home />
         </Route>
         <Route path="/signup" exact>
           <Signup />
@@ -21,6 +24,9 @@ const App = () => {
         </Route>
         <Route path="/products" exact>
           <Products />
+        </Route>
+        <Route path="/logout" exact>
+          <Logout />
         </Route>
         <Route>
           <ErrorPage />

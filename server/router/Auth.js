@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const express=require("express");
 const router=express.Router();
+const jwt=require("jsonwebtoken")
+const Authenticate =require("../middleware/Authenticate")
 
 require("../db/Conn");
 const UserCrud = require("../model/UserSchema");
@@ -33,10 +35,11 @@ router.post("/register",async(req,res)=>{
 
 router.post("/signin",async(req,res)=>{
     try {
+        let token;
         const {email,password}=req.body;
 
         if(!email || !password){
-            res.status(422).json({error:"Please Fill The Fields Properly.."})
+            res.status(400).json({error:"Please Fill The Fields Properly.."})
         }
 
         const userLogin=await UserCrud.findOne({email:email});
@@ -47,11 +50,18 @@ router.post("/signin",async(req,res)=>{
         if(!isMatch){
             res.status(400).json({error : "Invalid Credentials"})
         }else{
-           res.json({message:"User Login Successfully.."})
+            token=await userLogin.generateAuthToken();
+            console.log(token);
+          
+            res.cookie("jwtoken", token, {
+              expires: new Date(Date.now() + 25892000000),
+              httpOnly: true,
+            });
+             res.json({ message: "User Login Successfully" });
         }
-    }else{
-        res.status(400).json({error:"Invalid Credentials"})
-    }
+        }else{
+            res.status(400).json({ error: "Invalid Credientials " });
+        }
     
     } catch (error) {
         console.log(error)
@@ -59,28 +69,45 @@ router.post("/signin",async(req,res)=>{
  
 })
 
-router.post("/userproducts",async(req,res)=>{
-    try{
-      const {productName,productPrice,productQuantity,productDescription}=req.body
-      console.log(productName);
-      if(!productName || !productPrice || !productQuantity || ! productDescription){
-        res.status(422).json({error:"Please Fill The Fields Properly.."})
-      }else{
-        const Product=await UserCrud.findOne({_id:req.id});
 
-        if(Product){
-            const newProduct=await productName.addMessage(
-                productName,productPrice,productQuantity,productDescription
-            )
-            await userContact.save();
+router.get("/products", Authenticate, (req, res) => {
+  res.send(req.rootUser);
+});
 
-            res.status(201).json({ message: "user Contact successfully" });
-        }
-      }
-       
-    }catch(error){
+router.get("/home", Authenticate, (req, res) => {
+  res.send(req.rootUser);
+});
+
+
+
+router.post("/userproducts",Authenticate,async (req,res)=>{
+    try {
+        
+   const { ProductName, ProductPrice, ProductQuantity, ProductDescription } =
+   req.body;
+   if(!ProductName || !ProductPrice || !ProductQuantity || !ProductDescription){
+       return res.status(422).json({error: "Please Fill The Fields Properly"});
+   }
+    const userAvailable = await UserCrud.findOne({ _id: req.userID });
+
+    if(userAvailable){
+          const userProduct = await userAvailable.addProduct(
+            ProductName,
+            ProductPrice,
+            ProductQuantity,
+            ProductDescription
+          );
+
+          await userAvailable.save();
+          res.status(201).json({ message: "Product Saved Successfully" });
+    }
+
+    } catch (error) {
         console.log(error)
     }
+   
 })
+
+
 
 module.exports = router;

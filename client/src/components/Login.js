@@ -27,7 +27,7 @@ const Login = () => {
 } else {
     window.alert("Login Successfull");
     console.log("login Succesfull")
-    history.push("/products");
+    history.push("/");
 }
 }
 
