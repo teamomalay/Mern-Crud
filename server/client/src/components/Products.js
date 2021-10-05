@@ -35,6 +35,7 @@ const Products = () => {
 
           const data=await res.json();
           setDbData(data.products)
+          console.log(data.products)
           setShowResults(true);
           setLoading(false)
          
@@ -98,12 +99,13 @@ const Products = () => {
 
   const removeBtn= async (id)=>{
         try {
-          const res=await fetch("/deleteProduct",{
+          const res=await fetch(`/removeProduct/${id}`,{
             method:"DELETE",
-            
           })
+          callProductsPage();
+          const data=await res.json()
         } catch (error) {
-          
+          console.log(error)
         }
   }
       
@@ -206,23 +208,32 @@ const Products = () => {
               <Table striped bordered hover variant="dark">
                 <thead>
                   <tr>
-                    <th>Id</th>
                     <th>Product Name</th>
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Description</th>
-                    <th><Button>Remove</Button></th>
+                    <th>
+                      Remove Product
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dbData?.map((Product, id) => {
+                  {dbData?.map((Product,id) => {
                     return (
                       <tr key={id}>
-                        <td>{id + 1}</td>
                         <td>{Product.ProductName}</td>
                         <td>{Product.ProductPrice}</td>
                         <td>{Product.ProductQuantity}</td>
-                        <td><Button variant="danger" onClick={()=>removeBtn(id)}>Remove</Button></td>
+                        <td>{Product.ProductDescription}</td>
+
+                        <td>
+                          <Button
+                            variant="danger"
+                            onClick={() => removeBtn(Product._id)}
+                          >
+                            Remove
+                          </Button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -259,7 +270,6 @@ const Products = () => {
               <Table striped bordered hover variant="dark">
                 <thead>
                   <tr>
-                    <th>Id</th>
                     <th>Product Name</th>
                     <th>Price</th>
                     <th>Quantity</th>
@@ -270,7 +280,6 @@ const Products = () => {
                   {dbData?.map((Product, id) => {
                     return (
                       <tr key={id}>
-                        <td>{id + 1}</td>
                         <td>{Product.ProductName}</td>
                         <td>{Product.ProductPrice}</td>
                         <td>{Product.ProductQuantity}</td>

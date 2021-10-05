@@ -108,6 +108,18 @@ router.post("/userproducts",Authenticate,async (req,res)=>{
    
 })
 
+router.delete(`/removeProduct/:id`,Authenticate,async (req,res)=>{
+    const {id}=req.params;
+    console.log(id);
+    try {
+        const productAvailable = await req.rootUser.deleteProduct(id);
+        //  await productAvailable.save();
+          res.status(201).json({ message: "Product Removed Successfully" });
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 
 
 module.exports = router;
