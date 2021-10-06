@@ -15,6 +15,7 @@ const Products = () => {
   const [dbData,setDbData]=useState([])
   const [showResults,setShowResults]=useState(false);
   const [loading, setLoading] = useState(false);
+  const [productId,setProductId]=useState(null);
 
 
   useEffect(()=>{
@@ -85,7 +86,7 @@ const Products = () => {
        setLoading(false);
 
       if (res.status === 422 || !data) {
-        window.alert("Please Fill The Fields Properly");
+        window.alert("PleassetProductPricee Fill The Fields Properly");
         console.log("Please Fill The Fields Properly");
       } else {
         window.alert(" Product Added Successfully");
@@ -102,11 +103,46 @@ const Products = () => {
           const res=await fetch(`/removeProduct/${id}`,{
             method:"DELETE",
           })
+           window.alert(" Product Deleted Successfully");
           callProductsPage();
-          const data=await res.json()
         } catch (error) {
           console.log(error)
         }
+  }
+
+  const selectProductToUpdate =  (id) => {
+      const mydata=dbData.filter((product)=>{
+       return product._id == id;
+      })
+      setProductName(mydata[0].ProductName)
+      setProductPrice(mydata[0].ProductPrice)
+      setProductQuantity(mydata[0].ProductQuantity)
+      setProductDescriptionn(mydata[0].ProductDescription);
+      setProductId(id);
+  };
+
+  const updateClick= async ()=>{
+    try {
+      const res = await fetch(`updateProduct/${productId}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ProductName,
+          ProductPrice,
+          ProductQuantity,
+          ProductDescription,
+          productId,
+        }),
+      });
+
+      const data=await res.json()
+    } catch (error) {
+      console.log(error);
+    }
+      
   }
       
 
@@ -174,8 +210,11 @@ const Products = () => {
           />
         </InputGroup>
         <div>
-          <Button onClick={saveClick} className="mt-3" variant="primary">
-            Save Product
+          <Button onClick={saveClick} className="mt-3 me-3" variant="success">
+            Add Product
+          </Button>
+          <Button onClick={updateClick} className="mt-3" variant="info">
+            Update Product
           </Button>
         </div>
       </div>
@@ -208,24 +247,32 @@ const Products = () => {
               <Table striped bordered hover variant="dark">
                 <thead>
                   <tr>
+                    <th>Id</th>
                     <th>Product Name</th>
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Description</th>
-                    <th>
-                      Remove Product
-                    </th>
+                    <th>Update Product</th>
+                    <th>Remove Product</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {dbData?.map((Product,id) => {
+                  {dbData?.map((Product, id) => {
                     return (
                       <tr key={id}>
+                        <td>{id + 1}</td>
                         <td>{Product.ProductName}</td>
                         <td>{Product.ProductPrice}</td>
                         <td>{Product.ProductQuantity}</td>
                         <td>{Product.ProductDescription}</td>
-
+                        <td>
+                          <Button
+                            variant="info"
+                            onClick={() => selectProductToUpdate(Product._id)}
+                          >
+                            Update
+                          </Button>
+                        </td>
                         <td>
                           <Button
                             variant="danger"
@@ -242,57 +289,7 @@ const Products = () => {
             </div>
           </div>
         </div>
-      ) : (
-        <div
-          className="float-child text-center"
-          style={{
-            width: "50%",
-            float: "left",
-            padding: "20px",
-            marginTop: "90px",
-            marginLeft: "120px",
-          }}
-        >
-          <h3
-            className="mb-4"
-            style={{
-              color: "teal",
-              textShadow: "3px 3px 5px #2c2c2c",
-              textDecoration: "underline",
-            }}
-          >
-            Your Products
-          </h3>
-          <div style={{ position: "relative" }}>
-            <div
-              style={{ overflow: "auto", height: "289px", marginTop: "20px" }}
-            >
-              <Table striped bordered hover variant="dark">
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dbData?.map((Product, id) => {
-                    return (
-                      <tr key={id}>
-                        <td>{Product.ProductName}</td>
-                        <td>{Product.ProductPrice}</td>
-                        <td>{Product.ProductQuantity}</td>
-                        <td>{Product.ProductDescription}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-        </div>
-      )}
+      ) :null }
     </div>
   );
 };

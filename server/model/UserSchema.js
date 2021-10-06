@@ -110,6 +110,7 @@ UserSchema.methods.deleteProduct = async function(id){
   }
 }
 
+
 const UserCrud = mongoose.model("USERCRUD", UserSchema);
 
 module.exports = UserCrud;

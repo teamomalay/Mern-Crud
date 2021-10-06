@@ -21,10 +21,11 @@ const Home = () => {
             "Content-Type": "application/json",
           },
         });
+         setLoading(false);
         const data = await res.json();
         setUserName(data.username);
         setShowBtn(false);
-        setLoading(false)
+       
     } catch (error) {
       console.log(error)
     }

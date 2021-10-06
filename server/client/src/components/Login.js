@@ -1,9 +1,15 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { FormControl, InputGroup, Button } from "react-bootstrap";
 import { NavLink,useHistory } from "react-router-dom";
 
 
+import { UserContext } from "../App";
+
+
 const Login = () => {
+
+  const {state,dispatch}=useContext(UserContext)
+
   const history=useHistory()
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,12 +31,12 @@ const Login = () => {
     window.alert("Invalid Credentials");
     console.log("Invalid Credentials")
 } else {
+    dispatch({type:"USER", payload:true})
     window.alert("Login Successfull");
     console.log("login Succesfull")
     history.push("/");
 }
 }
-
 
 
 

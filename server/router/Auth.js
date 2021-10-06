@@ -2,7 +2,8 @@ const bcrypt = require("bcryptjs/dist/bcrypt");
 const express=require("express");
 const router=express.Router();
 const jwt=require("jsonwebtoken")
-const Authenticate =require("../middleware/Authenticate")
+const Authenticate =require("../middleware/Authenticate");
+
 
 require("../db/Conn");
 const UserCrud = require("../model/UserSchema");
@@ -78,6 +79,11 @@ router.get("/home", Authenticate, (req, res) => {
   res.send(req.rootUser);
 });
 
+router.get("/logout", (req, res) => {
+  res.clearCookie("jwtoken");
+  res.status(200).send({message:"User logout Successfully.."})
+});
+
 
 
 router.post("/userproducts",Authenticate,async (req,res)=>{
@@ -113,12 +119,82 @@ router.delete(`/removeProduct/:id`,Authenticate,async (req,res)=>{
     console.log(id);
     try {
         const productAvailable = await req.rootUser.deleteProduct(id);
-        //  await productAvailable.save();
           res.status(201).json({ message: "Product Removed Successfully" });
     } catch (error) {
         console.log(error)
     }
 })
+
+// router.put(`/updateProduct/:id`,async(req,res)=>{
+//    const {id}=req.params;
+//    console.log(id);
+//   const { ProductName,
+//         ProductPrice,
+//         ProductQuantity,
+//         ProductDescription,
+//         productId}=req.body;
+//    try {
+//        if(!ProductName || !ProductPrice || !ProductQuantity || !ProductDescription){
+//            return res
+//              .status(422)
+//              .json({ error: "Please Fill The Fields Properly" });
+//        }
+//         const updateProduct=await UserCrud.findOneAndUpdate({id},{
+//             $set:{
+//                 ProductName,
+//                 ProductPrice,
+//                 ProductQuantity,
+//                 ProductDescription
+//             }
+//         })
+//         if(updateProduct){
+//             console.log(updateProduct)
+//             res.status(200).json({ message: "Product Updated Successfully" });
+//         }
+//    } catch (error) {
+//        console.log(error);
+//    }
+   
+// })
+
+router.put(`/updateProduct/:id`,Authenticate, async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+  const {
+    ProductName,
+    ProductPrice,
+    ProductQuantity,
+    ProductDescription,
+    productId,
+  } = req.body;
+  try {
+    if (
+      !ProductName ||
+      !ProductPrice ||
+      !ProductQuantity ||
+      !ProductDescription
+    ) {
+      return res.status(422).json({ error: "Please Fill The Fields Properly" });
+    }
+    const updateProduct = await UserCrud.findOneAndUpdate(
+      { id },
+      {
+        $set: {
+          ProductName,
+          ProductPrice,
+          ProductQuantity,
+          ProductDescription,
+        },
+      }
+    );
+    if (updateProduct) {
+      console.log(updateProduct);
+      res.status(200).json({ message: "Product Updated Successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 
 
