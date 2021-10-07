@@ -1,44 +1,38 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import { FormControl, InputGroup, Button } from "react-bootstrap";
-import { NavLink,useHistory } from "react-router-dom";
-
+import { NavLink, useHistory } from "react-router-dom";
 
 import { UserContext } from "../App";
 
-
 const Login = () => {
+  const { dispatch } = useContext(UserContext);
 
-  const {state,dispatch}=useContext(UserContext)
-
-  const history=useHistory()
+  const history = useHistory();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const loginClick= async (e)=>{
-       e.preventDefault();
-       const res=await fetch("/signin",{
-         method:"POST",
-         headers:{
-           "Content-Type":"application/json"
-         },
-         body:JSON.stringify({email,password})
-       })
-      
+  const loginClick = async (e) => {
+    e.preventDefault();
+    const res = await fetch("/signin", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (res.status === 400 || !data) {
-    window.alert("Invalid Credentials");
-    console.log("Invalid Credentials")
-} else {
-    dispatch({type:"USER", payload:true})
-    window.alert("Login Successfull");
-    console.log("login Succesfull")
-    history.push("/");
-}
-}
-
-
+    if (res.status === 400 || !data) {
+      window.alert("Invalid Credentials");
+      console.log("Invalid Credentials");
+    } else {
+      dispatch({ type: "USER", payload: true });
+      window.alert("Login Successfull");
+      console.log("login Succesfull");
+      history.push("/");
+    }
+  };
 
   return (
     <>
@@ -58,7 +52,7 @@ const Login = () => {
         </h3>
         <InputGroup className="mb-3">
           <FormControl
-          autoComplete="off"
+            autoComplete="off"
             placeholder="Email"
             name="email"
             onChange={(e) => setEmail(e.target.value)}
@@ -67,7 +61,7 @@ const Login = () => {
         </InputGroup>
         <InputGroup className="mb-3">
           <FormControl
-          autoComplete="off"
+            autoComplete="off"
             type="password"
             placeholder="Password"
             name="password"
@@ -89,7 +83,6 @@ const Login = () => {
       </div>
     </>
   );
-}
-
+};
 
 export default Login;

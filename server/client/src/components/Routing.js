@@ -1,5 +1,5 @@
-import React,{useContext} from 'react';
-import Logout from './Logout';
+import React, { useContext } from "react";
+import Logout from "./Logout";
 import { Switch, Route } from "react-router-dom";
 import Signup from "./Signup";
 import Login from "./Login";
@@ -9,10 +9,10 @@ import Home from "./Home";
 import { UserContext } from "../App";
 
 const Routing = () => {
-    const { state, dispatch } = useContext(UserContext);
- 
-    console.log(state);
-  if (state===true) {
+  const { state } = useContext(UserContext);
+
+  console.log(state);
+  if (state == true) {
     return (
       <>
         <Switch>
@@ -56,4 +56,4 @@ const Routing = () => {
   }
 };
 
-export default Routing
+export default Routing;

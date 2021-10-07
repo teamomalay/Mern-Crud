@@ -1,60 +1,56 @@
 import React, { useEffect, useState } from "react";
-import { FormControl, InputGroup, Button,Table} from "react-bootstrap";
-import { NavLink, useHistory } from "react-router-dom";
-
-
+import { FormControl, InputGroup, Button, Table } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 
 const Products = () => {
+  const history = useHistory();
 
-  const history=useHistory()
-
-  const [ProductName,setProductName]=useState("");
-  const [ProductPrice,setProductPrice]=useState("");
-  const [ProductQuantity,setProductQuantity]=useState("");
-  const [ProductDescription,setProductDescriptionn]=useState("");
-  const [dbData,setDbData]=useState([])
-  const [showResults,setShowResults]=useState(false);
+  const [ProductName, setProductName] = useState("");
+  const [ProductPrice, setProductPrice] = useState("");
+  const [ProductQuantity, setProductQuantity] = useState("");
+  const [ProductDescription, setProductDescriptionn] = useState("");
+  const [dbData, setDbData] = useState([]);
+  const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [productId,setProductId]=useState(null);
+  const [productId, setProductId] = useState(null);
+  const [id, setId] = useState(null);
+  const [showBtn, setShowBtn] = useState(true);
 
+  useEffect(() => {
+    callProductsPage();
+  }, []);
 
-  useEffect(()=>{
-    callProductsPage()
-  },[])
-
-  const callProductsPage= async ()=>{
-        try{
-          setLoading(true)
-          const res=await fetch("/products",{
-            method:"GET",
-            headers:{
-              "Accept":"application/json",
-              "Content-Type" :"application/json"
-            },
-            credentials:"include",
-          })
-
-          const data=await res.json();
-          setDbData(data.products)
-          console.log(data.products)
-          setShowResults(true);
-          setLoading(false)
-         
-         
-             if (!res.status === 200) {
-               const error = new Error(res.error);
-               throw error;
-             }
-        }catch(err){
-          console.log(err);
-          history.push("/login");
-        }
-  }
-
-  
-  const saveClick= async (e)=>{
+  const callProductsPage = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
+      const res = await fetch("/products", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      setDbData(data.products);
+      console.log(data.products);
+      setShowResults(true);
+      setLoading(false);
+
+      if (!res.status === 200) {
+        const error = new Error(res.error);
+        throw error;
+      }
+    } catch (err) {
+      console.log(err);
+      history.push("/login");
+    }
+  };
+
+  const saveClick = async (e) => {
+    try {
+      setLoading(true);
       e.preventDefault();
       let dataToSent = {
         ProductName,
@@ -77,53 +73,54 @@ const Products = () => {
       });
       callProductsPage();
       const data = await res.json();
-       setDbData(data.products);
-       setShowResults(false);
-       setProductName("");
-       setProductPrice("");
-       setProductQuantity("");
-       setProductDescriptionn("");
-       setLoading(false);
+      setDbData(data.products);
+      setShowResults(false);
+      setProductName("");
+      setProductPrice("");
+      setProductQuantity("");
+      setProductDescriptionn("");
+      setLoading(false);
 
       if (res.status === 422 || !data) {
-        window.alert("PleassetProductPricee Fill The Fields Properly");
+        window.alert("Please Fill The Fields Properly");
         console.log("Please Fill The Fields Properly");
       } else {
         window.alert(" Product Added Successfully");
         console.log("Product Added Successfully");
       }
-      
     } catch (error) {
-       console.log(error)
+      console.log(error);
     }
-  }
-
-  const removeBtn= async (id)=>{
-        try {
-          const res=await fetch(`/removeProduct/${id}`,{
-            method:"DELETE",
-          })
-           window.alert(" Product Deleted Successfully");
-          callProductsPage();
-        } catch (error) {
-          console.log(error)
-        }
-  }
-
-  const selectProductToUpdate =  (id) => {
-      const mydata=dbData.filter((product)=>{
-       return product._id == id;
-      })
-      setProductName(mydata[0].ProductName)
-      setProductPrice(mydata[0].ProductPrice)
-      setProductQuantity(mydata[0].ProductQuantity)
-      setProductDescriptionn(mydata[0].ProductDescription);
-      setProductId(id);
   };
 
-  const updateClick= async ()=>{
+  const removeBtn = async (id) => {
     try {
-      const res = await fetch(`updateProduct/${productId}`, {
+      const res = await fetch(`/removeProduct/${id}`, {
+        method: "DELETE",
+      });
+      window.alert(" Product Deleted Successfully");
+      callProductsPage();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const selectProductToUpdate = (id, Id) => {
+    const mydata = dbData.filter((product) => {
+      return product._id == id;
+    });
+    setProductName(mydata[0].ProductName);
+    setProductPrice(mydata[0].ProductPrice);
+    setProductQuantity(mydata[0].ProductQuantity);
+    setProductDescriptionn(mydata[0].ProductDescription);
+    setProductId(id);
+    setId(Id);
+    setShowBtn(false);
+  };
+
+  const updateClick = async () => {
+    try {
+      const res = await fetch(`updateProduct/${id}`, {
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -137,18 +134,27 @@ const Products = () => {
           productId,
         }),
       });
-
-      const data=await res.json()
+      callProductsPage();
+      const data = await res.json();
+      if (res.status === 422 || !data) {
+        window.alert("Please Fill The Fields Properly");
+        console.log("Please Fill The Fields Properly");
+      } else {
+        window.alert("Product Updated Successfully");
+        console.log("Product Updated Successfully");
+      }
     } catch (error) {
       console.log(error);
     }
-      
-  }
-      
+  };
 
-   if (loading) {
-     return <h1 className="text-center" style={{color:"grey",marginTop:"200px"}}>Data is loading...</h1>;
-   }
+  if (loading) {
+    return (
+      <h1 className="text-center" style={{ color: "grey", marginTop: "200px" }}>
+        Data is loading...
+      </h1>
+    );
+  }
 
   return (
     <div className="float-container" style={{ padding: "20px" }}>
@@ -210,12 +216,15 @@ const Products = () => {
           />
         </InputGroup>
         <div>
-          <Button onClick={saveClick} className="mt-3 me-3" variant="success">
-            Add Product
-          </Button>
-          <Button onClick={updateClick} className="mt-3" variant="info">
-            Update Product
-          </Button>
+          {showBtn ? (
+            <Button onClick={saveClick} className="mt-3 me-3" variant="success">
+              Add Product
+            </Button>
+          ) : (
+            <Button onClick={updateClick} className="mt-3" variant="info">
+              Update Product
+            </Button>
+          )}
         </div>
       </div>
 
@@ -268,7 +277,9 @@ const Products = () => {
                         <td>
                           <Button
                             variant="info"
-                            onClick={() => selectProductToUpdate(Product._id)}
+                            onClick={() =>
+                              selectProductToUpdate(Product._id, id)
+                            }
                           >
                             Update
                           </Button>
@@ -276,7 +287,7 @@ const Products = () => {
                         <td>
                           <Button
                             variant="danger"
-                            onClick={() => removeBtn(Product._id)}
+                            onClick={() => removeBtn(Product._id, id)}
                           >
                             Remove
                           </Button>
@@ -289,7 +300,7 @@ const Products = () => {
             </div>
           </div>
         </div>
-      ) :null }
+      ) : null}
     </div>
   );
 };

@@ -1,7 +1,6 @@
-const mongoose=require("mongoose");
-const bcrypt=require("bcryptjs");
-const jwt=require("jsonwebtoken")
-
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -30,7 +29,6 @@ const UserSchema = new mongoose.Schema({
   },
   products: [
     {
-      
       ProductName: {
         type: String,
         required: true,
@@ -60,12 +58,12 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function (next) {
-    if (this.isModified("password")) {
-      console.log("Hii I am pre password ");
-      this.password = await bcrypt.hash(this.password, 12);
-    }
-    next();
-  });
+  if (this.isModified("password")) {
+    console.log("Hii I am pre password ");
+    this.password = await bcrypt.hash(this.password, 12);
+  }
+  next();
+});
 
 UserSchema.methods.generateAuthToken = async function () {
   try {
@@ -98,18 +96,36 @@ UserSchema.methods.addProduct = async function (
   }
 };
 
-UserSchema.methods.deleteProduct = async function(id){
+UserSchema.methods.deleteProduct = async function (id) {
   try {
-    this.products=this.products.filter((product)=>{
-      return product._id !=  id;
-    })
+    this.products = this.products.filter((product) => {
+      return product._id != id;
+    });
     await this.save();
     return this.products;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
+UserSchema.methods.updateProduct = async function (
+  id,
+  ProductName,
+  ProductPrice,
+  ProductQuantity,
+  ProductDescription
+) {
+  try {
+    this.products[id].ProductName = ProductName;
+    this.products[id].ProductPrice = ProductPrice;
+    this.products[id].ProductQuantity = ProductQuantity;
+    this.products[id].ProductDescription = ProductDescription;
+    await this.save();
+    return this.products;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const UserCrud = mongoose.model("USERCRUD", UserSchema);
 
