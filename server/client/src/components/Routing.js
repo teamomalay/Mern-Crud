@@ -12,48 +12,48 @@ const Routing = () => {
   const { state } = useContext(UserContext);
 
   console.log(state);
-  if (state == true) {
-    return (
-      <>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/products">
-            <Products />
-          </Route>
-          <Route path="/logout">
-            <Logout />
-          </Route>
-          <Route>
-            <ErrorPage />
-          </Route>
-        </Switch>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <Switch>
-          <Route path="/" exact>
-            <Home />
-          </Route>
-          <Route path="/signup">
-            <Signup />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/products">
-            <Products />
-          </Route>
-          <Route>
-            <ErrorPage />
-          </Route>
-        </Switch>
-      </>
-    );
-  }
+  return (
+    <div>
+      {state === true ? (
+        <>
+          <Switch>
+            <Route path="/" exact>
+              <Home />
+            </Route>
+            <Route path="/products">
+              <Products />
+            </Route>
+            <Route path="/logout">
+              <Logout />
+            </Route>
+            <Route>
+              <ErrorPage />
+            </Route>
+          </Switch>
+        </>
+      ) : (
+        <>
+          <Switch>
+            <Route path="/" exact>
+              <Home />
+            </Route>
+            <Route path="/signup">
+              <Signup />
+            </Route>
+            <Route path="/login">
+              <Login />
+            </Route>
+            <Route path="/products">
+              <Products />
+            </Route>
+            <Route>
+              <ErrorPage />
+            </Route>
+          </Switch>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Routing;

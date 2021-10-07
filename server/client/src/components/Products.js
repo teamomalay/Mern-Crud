@@ -73,6 +73,7 @@ const Products = () => {
       });
       callProductsPage();
       const data = await res.json();
+      setRemoveData(data);
       setDbData(data.products);
       setShowResults(false);
       setProductName("");
